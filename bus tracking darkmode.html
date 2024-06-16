@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Bus Tracking - Dark Mode</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #map-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            background-color: #1E1E1E;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #map-container h1 {
+            margin: 0;
+            padding: 20px;
+            background-color: #333333;
+            color: #FFFFFF;
+            text-align: center;
+        }
+
+        #map {
+            flex: 1;
+        }
+
+        .leaflet-control-attribution {
+            background: #333333;
+            color: #E0E0E0;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <h1>School Bus Live Tracking</h1>
+        <div id="map"></div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map and set its view to the specific location and zoom level
+        var map = L.map('map').setView([28.7041, 77.1025], 13); // Coordinates from the provided link
+
+        // Add a dark-themed tile layer to our map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+            id: 'mapbox/dark-v10', // Using a dark-themed tile layer
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'your.mapbox.access.token' // Replace with your Mapbox access token if needed
+        }).addTo(map);
+
+        // Placeholder for the bus marker
+        var busMarker = L.marker([28.7041, 77.1025]).addTo(map);
+
+        // Function to update the bus location
+        function updateBusLocation() {
+            // Fetch the bus location from the backend
+            fetch('https://your-backend-url.com/bus-location')
+                .then(response => response.json())
+                .then(data => {
+                    // Update bus marker position
+                    var newLatLng = new L.LatLng(data.latitude, data.longitude);
+                    busMarker.setLatLng(newLatLng);
+                    map.setView(newLatLng, 13);
+                })
+                .catch(error => console.error('Error fetching bus location:', error));
+        }
+
+        // Update the bus location every 5 seconds
+        setInterval(updateBusLocation, 5000);
+
+        // Call the update function immediately to load the initial location
+        updateBusLocation();
+    </script>
+</body>
+</html>

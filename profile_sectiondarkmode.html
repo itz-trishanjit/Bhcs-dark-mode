@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School App Profile Section</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            width: 300px;
+            margin: 50px auto;
+            background: #1e1e1e;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            text-align: center;
+            border-radius: 10px;
+        }
+
+       }
+
+        .profile-header {
+            margin-bottom: 20px;
+        }
+
+        #profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .profile-details p {
+            margin: 5px 0;
+        }
+
+        button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+          
+        }
+
+        .modal-content {
+            background-color: #black;
+            margin: 20% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            max-width: 200px;
+          border-radius: 45px;
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        form label {
+            display: none;
+            margin-top: 5px;
+        }
+
+        form input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+        }
+
+        form input[type="file"] {
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <img id="profile-pic" src="default-profile.png" alt="Profile Picture">
+            <h1 id="profile-name">John Doe</h1>
+            <button onclick="editProfile()">Edit Profile</button>
+        </div>
+        <div class="profile-details">
+            <p><strong>Class:</strong> <span id="class">10th Grade</span></p>
+            <p><strong>School House:</strong> <span id="school-house">Red House</span></p>
+            <p><strong>Section:</strong> <span id="section">A</span></p>
+            <p><strong>Roll:</strong> <span id="roll">23</span></p>
+            <p><strong>Address:</strong> <span id="address">123 Main St, Springfield</span></p>
+            <p><strong>Father's Name:</strong> <span id="father-name">Mr. John Doe Sr.</span></p>
+            <p><strong>Mother's Name:</strong> <span id="mother-name">Mrs. Jane Doe</span></p>
+            <p><strong>Email:</strong> <span id="email">john.doe@example.com</span></p>
+            <p><strong>Mobile Number:</strong> <span id="mobile-number">123-456-7890</span></p>
+            <p><strong>Date of Birth:</strong> <span id="dob">01/01/2000</span></p>
+        </div>
+    </div>
+
+    <div id="edit-profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="edit-profile-form" enctype="multipart/form-data" onsubmit="return saveProfile(event)">
+                <label for="profile-pic-input">Profile Picture:</label>
+                <input type="file" id="profile-pic-input" accept="image/*" onchange="loadFile(event)">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name">
+                <label for="class">Class:</label>
+                <input type="text" id="class-input" name="class">
+                <label for="school-house">School House:</label>
+                <input type="text" id="school-house-input" name="school-house">
+                <label for="section">Section:</label>
+                <input type="text" id="section-input" name="section">
+                <label for="roll">Roll:</label>
+                <input type="text" id="roll-input" name="roll">
+                <label for="address">Address:</label>
+                <input type="text" id="address-input" name="address">
+                <label for="father-name">Father's Name:</label>
+                <input type="text" id="father-name-input" name="father-name">
+                <label for="mother-name">Mother's Name:</label>
+                <input type="text" id="mother-name-input" name="mother-name">
+                <label for="email">Email:</label>
+                <input type="email" id="email-input" name="email">
+                <label for="mobile-number">Mobile Number:</label>
+                <input type="text" id="mobile-number-input" name="mobile-number">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob-input" name="dob">
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load initial user data from localStorage or set defaults
+        const defaultUserData = {
+            name: 'John Doe',
+            class: '10th Grade',
+            schoolHouse: 'Red House',
+            section: 'A',
+            roll: '23',
+            address: '123 Main St, Springfield',
+            fatherName: 'Mr. John Doe Sr.',
+            motherName: 'Mrs. Jane Doe',
+            email: 'john.doe@example.com',
+            mobileNumber: '123-456-7890',
+            dob: '2000-01-01',
+            profilePic: 'default-profile.png',
+            lastEdit: null
+        };
+
+        let userData = JSON.parse(localStorage.getItem('userData')) || defaultUserData;
+
+        function editProfile() {
+            // Check if 400 days have passed since last edit
+            const currentDate = new Date();
+            if (userData.lastEdit) {
+                const lastEditDate = new Date(userData.lastEdit);
+                const diffDays = (currentDate - lastEditDate) / (1000 * 60 * 60 * 24);
+                if (diffDays < 400) {
+                    alert('You can only edit your profile once every 400 days.');
+                    return;
+                }
+            }
+            document.getElementById('edit-profile-modal').style.display = 'flex';
+
+            // Populate the form with the current user data
+            document.getElementById('name').value = userData.name;
+            document.getElementById('class-input').value = userData.class;
+            document.getElementById('school-house-input').value = userData.schoolHouse;
+            document.getElementById('section-input').value = userData.section;
+            document.getElementById('roll-input').value = userData.roll;
+            document.getElementById('address-input').value = userData.address;
+            document.getElementById('father-name-input').value = userData.fatherName;
+            document.getElementById('mother-name-input').value = userData.motherName;
+            document.getElementById('email-input').value = userData.email;
+            document.getElementById('mobile-number-input').value = userData.mobileNumber;
+            document.getElementById('dob-input').value = userData.dob;
+        }
+
+        function closeModal() {
+            document.getElementById('edit-profile-modal').style.display = 'none';
+        }
+
+        function loadFile(event) {
+            const output = document.getElementById('profile-pic');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = function() {
+                URL.revokeObjectURL(output.src); // free memory
+            }
+        }
+
+        function saveProfile(event) {event.preventDefault();
+
+            // Get the form data
+            const formData = new FormData(document.getElementById('edit-profile-form'));
+
+            // Update local user data
+            userData.name = formData.get('name');
+            userData.class = formData.get('class');
+            userData.schoolHouse = formData.get('school-house');
+            userData.section = formData.get('section');
+            userData.roll = formData.get('roll');
+            userData.address = formData.get('address');
+            userData.fatherName = formData.get('father-name');
+            userData.motherName = formData.get('mother-name');
+            userData.email = formData.get('email');
+            userData.mobileNumber = formData.get('mobile-number');
+            userData.dob = formData.get('dob');
+
+            // Check if a new profile picture was uploaded
+            const profilePicInput = document.getElementById('profile-pic-input');
+            if (profilePicInput.files && profilePicInput.files[0]) {const reader = new FileReader();
+                reader.onload = function(e) {
+                    userData.profilePic = e.target.result;
+                    updateProfileUI();
+                }
+                reader.readAsDataURL(profilePicInput.files[0]);
+            } else {
+                updateProfileUI();
+            }
+
+            // Set lastEdit to current date
+            userData.lastEdit = new Date();
+
+            // Save updated user data to localStorage
+            localStorage.setItem('userData', JSON.stringify(userData));
+
+            // Close the modal
+            closeModal();
+        }
+
+        function updateProfileUI() {
+            // Update profile display
+            document.getElementById('profile-name').innerText = userData.name;
+            document.getElementById('class').innerText = userData.class;
+            document.getElementById('school-house').innerText = userData.schoolHouse;
+            document.getElementById('section').innerText = userData.section;
+            document.getElementById('roll').innerText = userData.roll;
+            document.getElementById('address').innerText = userData.address;
+            document.getElementById('father-name').innerText = userData.fatherName;
+            document.getElementById('mother-name').innerText = userData.motherName;
+            document.getElementById('email').innerText = userData.email;
+            document.getElementById('mobile-number').innerText = userData.mobileNumber;
+            document.getElementById('dob').innerText = new Date(userData.dob).toLocaleDateString();
+            document.getElementById('profile-pic').src = userData.profilePic;
+        }
+
+        // Load initial user data on page load
+        window.onload = function() {
+            updateProfileUI();
+        }
+    </script>
+</body>
+</html>

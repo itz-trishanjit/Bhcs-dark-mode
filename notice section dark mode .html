@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notice Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background: #1e1e1e;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #noticeForm {
+            margin-bottom: 20px;
+        }
+
+        #noticeForm input, #noticeForm textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #333;
+            border-radius: 4px;
+            background-color: #333;
+            color: #e0e0e0;
+        }
+
+        #noticeForm button {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            background: #5cb85c;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #noticeForm button:hover {
+            background: #4cae4c;
+        }
+
+        #noticeBoard .notice {
+            background: #2c2c2c;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="noticeForm">
+            <input type="text" id="regNo" placeholder="Enter your registration number">
+            <textarea id="noticeText" placeholder="Write your notice here"></textarea>
+            <button onclick="postNotice()">Post Notice</button>
+        </div>
+        <div id="noticeBoard"></div>
+    </div>
+    <script>
+        const authorizedRegNos = ['1', '2']; // Authorized registration numbers
+        const maxNoticesPerDay = 100;
+        const noticeExpiryDays = 1;
+
+        let notices = JSON.parse(localStorage.getItem('notices')) || [];
+
+        function postNotice() {
+            const regNo = document.getElementById('regNo').value;
+            const noticeText = document.getElementById('noticeText').value;
+
+            if (!authorizedRegNos.includes(regNo)) {
+                alert('You are not authorized to post notices.you are a student dont forget your work is to only play and study so focus on your study otherwise your complain will go to principal mam!👨🏻‍🎓😡');
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const todaysNotices = notices.filter(notice => notice.date === today);
+
+            if (todaysNotices.length >= maxNoticesPerDay) {
+                alert('Notice limit reached for today.');
+                return;
+            }
+
+            const notice = {
+                regNo: regNo,
+                text: noticeText,
+                date: today,
+                expiryDate: new Date(Date.now() + noticeExpiryDays * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+            };
+
+            notices.push(notice);
+            localStorage.setItem('notices', JSON.stringify(notices));
+            displayNotices();
+        }
+
+        function displayNotices() {
+            const noticeBoard = document.getElementById('noticeBoard');
+            noticeBoard.innerHTML = '';
+
+            const now = new Date().toISOString().split('T')[0];
+            notices = notices.filter(notice => notice.expiryDate >= now);
+
+            notices.forEach(notice => {
+                const noticeElement = document.createElement('div');
+                noticeElement.className = 'notice';
+                noticeElement.innerText = `${notice.date} - ${notice.text}`;
+                noticeBoard.appendChild(noticeElement);
+            });
+
+            localStorage.setItem('notices', JSON.stringify(notices));
+        }
+
+        document.addEventListener('DOMContentLoaded', displayNotices);
+    </script>
+</body>
+</html>
